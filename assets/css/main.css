@@ -14,8 +14,9 @@
    12. FOOTER
    13. STILI LEGACY (non usati in index.html: contatti, testimonianze, ecc.)
    14. PAGINA PRIVACY POLICY
-   15. MOBILE: REGOLE COMUNI "UNA SEZIONE = UNO SCHERMO" (iPhone SE)
-   16. ACCESSIBILITÀ (prefers-reduced-motion)
+   15. ACCESSIBILITÀ (prefers-reduced-motion)
+
+   Le modifiche principali rispetto alla versione precedente sono marcate "FIX".
    ========================================================================== */
 
 
@@ -39,19 +40,12 @@
   --container: 1120px;
 }
 
-/* Variabili solo mobile: altezza header e altezza di uno "schermo" */
+/* Variabili solo mobile */
 @media (max-width: 767.98px) {
   :root {
     --radius: 16px;
     --shadow: 0 10px 28px rgba(70, 43, 24, 0.10);
     --header-h: 56px;
-    --screen-h: calc(100vh - var(--header-h));
-  }
-
-  @supports (height: 100svh) {
-    :root {
-      --screen-h: calc(100svh - var(--header-h));
-    }
   }
 }
 
@@ -62,14 +56,19 @@
   box-sizing: border-box;
 }
 
+/* FIX: il blocco dello scroll orizzontale va SOLO su html.
+   Se html e body hanno entrambi overflow-x: hidden, body diventa un
+   contenitore di scroll e l'header sticky smette di funzionare. */
 html {
   scroll-behavior: smooth;
   -webkit-text-size-adjust: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
 }
 
 body {
-  overflow-x: hidden;
   margin: 0;
+  max-width: 100%;
   background:
     radial-gradient(circle at top left, rgba(217, 154, 61, 0.14), transparent 34rem),
     linear-gradient(180deg, #fff8ef 0%, #fffdf9 48%, #fff8ef 100%);
@@ -101,6 +100,7 @@ h1,
 h2,
 h3 {
   line-height: 1.12;
+  overflow-wrap: break-word; /* FIX: evita che parole lunghe allarghino la pagina */
 }
 
 h1 {
@@ -235,7 +235,7 @@ details p {
 .contact-grid,
 .faq-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(320px, 0.78fr);
+  grid-template-columns: minmax(0, 1fr) minmax(0, 0.78fr); /* FIX: minmax(0, ...) al posto di minmax(320px, ...) */
   gap: 3rem;
   align-items: center;
 }
@@ -274,7 +274,8 @@ textarea:focus {
   .about-grid,
   .contact-grid,
   .faq-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr); /* FIX: era 1fr */
+    gap: 2rem;
   }
 }
 
@@ -284,7 +285,6 @@ textarea:focus {
   }
 
   body {
-    overflow-x: clip;
     line-height: 1.45;
   }
 
@@ -386,10 +386,12 @@ textarea:focus {
   width: 46px;
   height: 46px;
   place-items: center;
+  object-fit: contain; /* FIX: il logo (img) non si deforma */
 }
 
+/* FIX: il gap fisso di 5.4rem faceva andare a capo il menu tra 992px e ~1200px */
 .nav-links {
-  gap: 5.4rem;
+  gap: clamp(0.5rem, 3vw, 5.4rem);
 }
 
 .nav-links .nav-link {
@@ -453,6 +455,7 @@ textarea:focus {
   .logo {
     gap: 0.5rem;
     font-size: 0.95rem;
+    min-width: 0;
   }
 
   .logo-mark {
@@ -493,17 +496,28 @@ textarea:focus {
 
 /*------------------ 04. SECTION HERO ------------------*/
 
+/* FIX (causa principale dello scroll orizzontale su iPhone SE):
+   .hero è un grid con un solo figlio (.container). Senza una colonna
+   esplicita la colonna è "auto" e si allarga al contenuto, trascinandosi
+   dietro tutta la pagina. Con minmax(0, 1fr) resta larga come lo schermo. */
 .hero {
   min-height: calc(100vh - 76px);
+  min-height: calc(100svh - 76px);
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   align-items: center;
   padding: 6rem 0;
   background:
-    radial-gradient(circle at 15% 20%, rgb(255 152 0 / 28%), transparent 32rem), radial-gradient(circle at 85% 30%, rgba(47, 118, 109, 0.18), transparent 28rem), linear-gradient(
-    170deg, #ffc77f 0%, #fff1dc 45%, #f7eadb 100%)
+    radial-gradient(circle at 15% 20%, rgb(255 152 0 / 28%), transparent 32rem),
+    radial-gradient(circle at 85% 30%, rgba(47, 118, 109, 0.18), transparent 28rem),
+    linear-gradient(170deg, #ffc77f 0%, #fff1dc 45%, #f7eadb 100%);
 }
 
 .hero-grid {
+  min-width: 0;
+}
+
+.hero-content {
   min-width: 0;
 }
 
@@ -522,6 +536,7 @@ textarea:focus {
 
 .hero-visual {
   position: relative;
+  min-width: 0;
   min-height: 450px;
 }
 
@@ -627,11 +642,25 @@ textarea:focus {
 @media (max-width: 980px) {
   .hero {
     min-height: auto;
+    padding: 3rem 0;
+  }
+
+  /* FIX: l'ombra a blocco e la nota spostata a destra uscivano dallo schermo */
+  .browser-card {
+    box-shadow: 8px 8px 0 rgba(47, 118, 109, 0.22), var(--shadow);
+  }
+
+  .floating-note {
+    right: 0;
   }
 }
 
 /* Mobile */
 @media (max-width: 767.98px) {
+  .hero {
+    padding: 1.5rem 0 2rem; /* FIX: i 6rem di padding verticale erano enormi su telefono */
+  }
+
   .hero-grid {
     gap: 0.85rem;
   }
@@ -662,7 +691,7 @@ textarea:focus {
   }
 
   .browser-card {
-    box-shadow: 6px 6px 0 rgba(47, 118, 109, 0.22), var(--shadow);
+    box-shadow: 4px 4px 0 rgba(47, 118, 109, 0.22), var(--shadow); /* FIX: ombra più corta, non sborda */
   }
 
   .browser-dots {
@@ -833,8 +862,10 @@ textarea:focus {
 
 /* ---------- Griglia ---------- */
 
+/* FIX: la griglia non aveva colonne definite (colonna "auto" che si allarga) */
 .pf-grid {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: 1.75rem;
   min-width: 0;
 }
@@ -860,7 +891,7 @@ textarea:focus {
 .pf-card--featured {
   grid-column: 1 / -1;
   display: grid;
-  grid-template-columns: 1fr 1.1fr;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); /* FIX: era 1fr 1.1fr */
 }
 
 /* ---------- Anteprima (finto browser in CSS) ---------- */
@@ -870,6 +901,7 @@ textarea:focus {
   --pf-shot-line: var(--pf-cream);
   display: flex;
   flex-direction: column;
+  min-width: 0;
   margin: 1.1rem 1.1rem 0;
   border: 2px solid var(--pf-ink);
   border-radius: 14px;
@@ -877,8 +909,10 @@ textarea:focus {
   background: var(--pf-shot-bg);
 }
 
+/* FIX: nell'HTML l'anteprima è dopo il testo, qui la porto a sinistra come da progetto */
 .pf-card--featured .pf-shot {
-  margin: 1.4rem 1.4rem 1.4rem 0;
+  order: -1;
+  margin: 1.4rem 0 1.4rem 1.4rem;
 }
 
 /* screenshot */
@@ -953,10 +987,11 @@ textarea:focus {
   background: var(--pf-cream);
 }
 
+/* FIX: questa regola generica (height: 100%) veniva sovrascritta male dalla
+   regola ".pf-shot .pf-img" sopra; ora è limitata agli img fuori da .pf-shot */
 .pf-img {
   display: block;
-  width: 100%;
-  height: 100%;
+  max-width: 100%;
   object-fit: cover;
 }
 
@@ -1062,6 +1097,7 @@ textarea:focus {
   background: var(--pf-terracotta);
   color: var(--pf-cream);
   font-weight: 800;
+  text-align: center;
   box-shadow: 4px 4px 0 var(--pf-ink);
   transition: transform 180ms ease, box-shadow 180ms ease;
 }
@@ -1087,6 +1123,7 @@ textarea:focus {
 
 .pf-cta {
   display: flex;
+  flex-direction: column;
   flex-wrap: wrap;
   gap: 1rem 1.5rem;
   align-items: center;
@@ -1095,13 +1132,13 @@ textarea:focus {
   font-size: 1.15rem;
   font-weight: 700;
   color: var(--pf-ink);
-  flex-direction: column;
+  text-align: center;
 }
 
 /* Tablet */
 @media (max-width: 900px) {
   .pf-card--featured {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr); /* FIX: era 1fr */
   }
 
   .pf-card--featured .pf-shot {
@@ -1118,7 +1155,7 @@ textarea:focus {
   }
 }
 
-/* Mobile: screenshot in alto, testo sotto, tutto in uno schermo */
+/* Mobile: screenshot in alto, testo sotto */
 @media (max-width: 767.98px) {
   .portfolio .section-heading {
     margin-bottom: 0.7rem;
@@ -1243,7 +1280,6 @@ textarea:focus {
     margin-top: 0.8rem;
     font-size: 0.9rem;
     line-height: 1.3;
-    text-align: center;
   }
 }
 
@@ -1270,7 +1306,7 @@ textarea:focus {
 
 .package-note {
   max-width: 500px;
-  margin: 2.5rem auto ;
+  margin: 2.5rem auto;
   padding: 1rem 1.2rem;
   border-left: 4px solid var(--accent);
   border-radius: var(--radius);
@@ -1363,130 +1399,6 @@ textarea:focus {
   border-radius: 50%;
   background: var(--accent);
 }
-@media (max-width: 767.98px) {
-
-  /* Servizi aggiuntivi: card una sotto l'altra */
-
-  .extra-services {
-    display: flex;
-    flex-direction: column;
-    min-height: 0;
-    width: 100%;
-    margin: 0.75rem 0;
-    padding: 0.85rem;
-    box-sizing: border-box;
-    scroll-snap-align: start;
-    scroll-margin-top: 0.75rem;
-  }
-
-  .extra-services-heading {
-    margin-bottom: 0.8rem;
-  }
-
-  .extra-services-heading h3 {
-    margin-bottom: 0.4rem;
-    font-size: 1.1rem;
-    line-height: 1.2;
-  }
-
-  .extra-services-heading p:not(.eyebrow) {
-    margin-bottom: 0;
-    font-size: 0.78rem;
-    line-height: 1.32;
-  }
-
-  /* Le card non scorrono più orizzontalmente */
-  .extra-services-grid {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    min-height: 0;
-    gap: 0.8rem;
-    overflow: visible;
-  }
-
-  .extra-service-card {
-    flex: none;
-    width: 100%;
-    box-sizing: border-box;
-    gap: 0.6rem;
-    padding: 0.9rem;
-    overflow: visible;
-    scroll-snap-align: none;
-  }
-
-  .extra-service-top {
-    gap: 0.5rem;
-  }
-
-  .extra-service-label {
-    font-size: 0.9rem;
-  }
-
-  .extra-service-price {
-    font-size: 1.4rem;
-  }
-
-  .extra-service-price span {
-    font-size: 0.75rem;
-  }
-
-  .extra-service-card h4 {
-    font-size: 0.92rem;
-    line-height: 1.2;
-  }
-
-  .extra-service-list {
-    gap: 0.3rem;
-  }
-
-  .extra-service-list li {
-    padding-left: 1rem;
-    font-size: 0.8rem;
-    line-height: 1.32;
-  }
-
-  .extra-service-list li::before {
-    top: 0.55em;
-    width: 6px;
-    height: 6px;
-  }
-
-  .service-price-list {
-    gap: 0.4rem;
-  }
-
-  .service-price-list div {
-    grid-template-columns: auto minmax(0, 1fr);
-    gap: 0.5rem;
-    padding: 0.5rem 0.6rem;
-  }
-
-  .service-price-list strong {
-    font-size: 0.95rem;
-  }
-
-  .service-price-list span {
-    font-size: 0.76rem;
-    line-height: 1.3;
-  }
-
-  .extra-service-card .button {
-    margin-top: 0.5rem;
-    min-height: 40px;
-    font-size: 0.82rem;
-    box-shadow: none;
-  }
-
-  .extra-services-note {
-    margin-top: 0.7rem;
-    padding: 0.5rem 0.7rem;
-    font-size: 0.72rem;
-    line-height: 1.3;
-  }
-}
-
-
 
 /* ---------- Servizi aggiuntivi (sotto i pacchetti) ---------- */
 
@@ -1606,7 +1518,7 @@ textarea:focus {
 
 .service-price-list div {
   display: grid;
-  grid-template-columns: auto 1fr;
+  grid-template-columns: auto minmax(0, 1fr);
   gap: 0.75rem;
   align-items: start;
   padding: 0.85rem;
@@ -1639,7 +1551,7 @@ textarea:focus {
 /* Tablet */
 @media (max-width: 980px) {
   .package-grid {
-    grid-template-columns: repeat(1, minmax(0, 1fr));
+    grid-template-columns: minmax(0, 1fr);
   }
 
   .package-card.featured {
@@ -1647,12 +1559,9 @@ textarea:focus {
   }
 }
 
-/* Mobile: la sezione occupa DUE schermi.
-   Schermo 1 = titolo + nota + pacchetti (scorrimento orizzontale a swipe)
-   Schermo 2 = servizi aggiuntivi (scorrimento orizzontale a swipe)    */
+/* FIX: questo blocco mobile era presente DUE volte identico (una prima delle
+   regole base, dove veniva sovrascritto, e una qui). Ora ce n'è una sola. */
 @media (max-width: 767.98px) {
-
-  /* Servizi aggiuntivi: card una sotto l'altra */
 
   .extra-services {
     display: flex;
@@ -1661,9 +1570,6 @@ textarea:focus {
     width: 100%;
     margin: 0.75rem 0;
     padding: 0.85rem;
-    box-sizing: border-box;
-    scroll-snap-align: start;
-    scroll-margin-top: 0.75rem;
   }
 
   .extra-services-heading {
@@ -1682,24 +1588,19 @@ textarea:focus {
     line-height: 1.32;
   }
 
-  /* Le card non scorrono più orizzontalmente */
   .extra-services-grid {
     display: flex;
     flex-direction: column;
     width: 100%;
     min-height: 0;
     gap: 0.8rem;
-    overflow: visible;
   }
 
   .extra-service-card {
     flex: none;
     width: 100%;
-    box-sizing: border-box;
     gap: 0.6rem;
     padding: 0.9rem;
-    overflow: visible;
-    scroll-snap-align: none;
   }
 
   .extra-service-top {
@@ -1744,7 +1645,6 @@ textarea:focus {
   }
 
   .service-price-list div {
-    grid-template-columns: auto minmax(0, 1fr);
     gap: 0.5rem;
     padding: 0.5rem 0.6rem;
   }
@@ -1785,6 +1685,7 @@ textarea:focus {
 }
 
 .process-list li {
+  min-width: 0;
   padding: 1.25rem;
   border-bottom: 3px solid var(--primary);
   border-radius: var(--radius);
@@ -1837,6 +1738,7 @@ textarea:focus {
     margin-bottom: 0.2rem;
     font-size: 0.88rem;
     line-height: 1.2;
+    overflow-wrap: break-word;
   }
 
   .process-list p {
@@ -1866,7 +1768,7 @@ textarea:focus {
 
 .about-wrapper {
   display: grid;
-  grid-template-columns: minmax(0, 1.25fr) minmax(280px, 0.75fr);
+  grid-template-columns: minmax(0, 1.25fr) minmax(0, 0.75fr); /* FIX: era minmax(280px, ...) */
   gap: 2rem;
   align-items: stretch;
   min-width: 0;
@@ -1874,6 +1776,7 @@ textarea:focus {
 
 .about-text,
 .about-box {
+  min-width: 0;
   border: 1px solid var(--border);
   border-radius: var(--radius);
   background: rgba(255, 255, 255, 0.86);
@@ -1895,6 +1798,13 @@ textarea:focus {
 
 .about-text p:last-child {
   margin-bottom: 0;
+}
+
+.about-image {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
 }
 
 .about-box {
@@ -1937,9 +1847,10 @@ textarea:focus {
   box-shadow: 3px 3px 0 rgba(47, 118, 109, 0.25);
 }
 
+/* FIX: tolto !important, non serve */
 .img-chi_sono {
   width: 100%;
-  max-width: 100% !important;
+  max-width: 100%;
   height: auto;
   object-fit: contain;
 }
@@ -1947,7 +1858,12 @@ textarea:focus {
 /* Tablet */
 @media (max-width: 900px) {
   .about-wrapper {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .img-chi_sono {
+    width: auto;
+    max-height: 200px;
   }
 }
 
@@ -2011,6 +1927,7 @@ textarea:focus {
 .faq-list {
   display: grid;
   gap: 0.85rem;
+  min-width: 0;
 }
 
 details {
@@ -2030,13 +1947,12 @@ details p {
   margin: 0.8rem 0 0;
 }
 
-/* Mobile: titolo in alto, domande sotto; se se ne apre una la lista scorre dentro lo schermo */
+/* FIX: tolti height: 100% e overflow-y: auto, senza un'altezza definita
+   sul genitore non facevano nulla e potevano creare scroll annidati. */
 @media (max-width: 767.98px) {
   .faq-grid {
     grid-template-columns: minmax(0, 1fr);
-    grid-template-rows: auto minmax(0, 1fr);
     gap: 0.5rem;
-    height: 100%;
     align-content: start;
   }
 
@@ -2047,10 +1963,7 @@ details p {
   .faq-list {
     gap: 0.5rem;
     align-content: start;
-    min-height: 0;
     padding: 0.2rem 0.2rem 0.4rem 0;
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
   }
 
   details {
@@ -2095,7 +2008,20 @@ details p {
   justify-content: space-between;
 }
 
-/* Mobile: contenuto centrato nello schermo */
+@media (max-width: 767.98px) {
+  .final-cta {
+    padding: 2rem 0;
+  }
+
+  .final-cta-inner > div {
+    min-width: 0;
+  }
+
+  .final-cta-inner .button {
+    width: 100%;
+  }
+}
+
 
 /*------------------ 12. FOOTER ------------------*/
 
@@ -2109,6 +2035,10 @@ details p {
   display: grid;
   grid-template-columns: 1.4fr 1fr 1fr;
   gap: 2rem;
+  min-width: 0;
+}
+
+.footer-grid > * {
   min-width: 0;
 }
 
@@ -2153,12 +2083,15 @@ details p {
   }
 }
 
-/* Mobile: contatti centrati, copyright in fondo allo schermo */
+/* Mobile */
 @media (max-width: 767.98px) {
+  .site-footer {
+    padding: 2rem 0 1rem;
+  }
+
   .footer-grid {
     grid-template-columns: minmax(0, 1fr);
     gap: 1rem;
-    margin-block: auto;
   }
 
   .footer-logo .logo-mark {
@@ -2177,6 +2110,7 @@ details p {
 
   .site-footer li {
     font-size: 0.9rem;
+    overflow-wrap: anywhere; /* FIX: l'email lunga non deve allargare la pagina */
   }
 
   .site-footer li + li {
@@ -2326,7 +2260,7 @@ cite {
 }
 
 .two-columns {
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: 1rem;
 }
 
@@ -2427,21 +2361,7 @@ cite {
   margin-top: 45px;
 }
 
-@media (max-width: 768px) {
-  .privacy-hero {
-    padding: 60px 0;
-  }
-
-  .privacy-card {
-    padding: 22px;
-  }
-
-  .privacy-card h2 {
-    font-size: 1.35rem;
-  }
-}
-
-/* Mobile: la pagina privacy è un testo lungo, scorre normalmente */
+/* FIX: unificati i due blocchi mobile (768px e 767.98px) in uno solo */
 @media (max-width: 767.98px) {
   .privacy-hero {
     padding-block: 2rem;
@@ -2479,16 +2399,7 @@ cite {
 }
 
 
-/*------------------ 15. MOBILE: REGOLE COMUNI "UNA SEZIONE = UNO SCHERMO" ------------------*/
-/* Ogni sezione di index.html (hero, problemi, portfolio, pacchetti, metodo,
-   chi sono, faq, cta finale, footer) occupa esattamente l'area visibile sotto
-   l'header: 100svh - 56px. Lo scroll "aggancia" una sezione alla volta.
-   Il selettore :where(#top) limita queste regole alla home (main#top) e non
-   tocca la pagina privacy. */
-
-
-
-/*------------------ 16. ACCESSIBILITÀ ------------------*/
+/*------------------ 15. ACCESSIBILITÀ ------------------*/
 
 @media (prefers-reduced-motion: reduce) {
   html {
@@ -2496,7 +2407,8 @@ cite {
   }
 
   .pf-card,
-  .pf-button {
+  .pf-button,
+  .button {
     transition: none;
   }
 }
