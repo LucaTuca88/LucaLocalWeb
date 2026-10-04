@@ -14,11 +14,7 @@
    12. FOOTER
    13. STILI LEGACY (non usati in index.html: contatti, testimonianze, ecc.)
    14. PAGINA PRIVACY POLICY
-   15. ACCESSIBILITÀ (prefers-reduced-motion)
-
-   Le modifiche principali rispetto alla versione precedente sono marcate "FIX".
-   ========================================================================== */
-
+   15. ACCESSIBILITÀ 
 
 /*------------------ 01. VARIABILI ------------------*/
 
@@ -56,9 +52,6 @@
   box-sizing: border-box;
 }
 
-/* FIX: il blocco dello scroll orizzontale va SOLO su html.
-   Se html e body hanno entrambi overflow-x: hidden, body diventa un
-   contenitore di scroll e l'header sticky smette di funzionare. */
 html {
   scroll-behavior: smooth;
   -webkit-text-size-adjust: 100%;
@@ -100,7 +93,7 @@ h1,
 h2,
 h3 {
   line-height: 1.12;
-  overflow-wrap: break-word; /* FIX: evita che parole lunghe allarghino la pagina */
+  overflow-wrap: break-word;
 }
 
 h1 {
@@ -235,7 +228,7 @@ details p {
 .contact-grid,
 .faq-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 0.78fr); /* FIX: minmax(0, ...) al posto di minmax(320px, ...) */
+  grid-template-columns: minmax(0, 1fr) minmax(0, 0.78fr); 
   gap: 3rem;
   align-items: center;
 }
@@ -274,7 +267,7 @@ textarea:focus {
   .about-grid,
   .contact-grid,
   .faq-grid {
-    grid-template-columns: minmax(0, 1fr); /* FIX: era 1fr */
+    grid-template-columns: minmax(0, 1fr); 
     gap: 2rem;
   }
 }
@@ -386,10 +379,10 @@ textarea:focus {
   width: 46px;
   height: 46px;
   place-items: center;
-  object-fit: contain; /* FIX: il logo (img) non si deforma */
+  object-fit: contain; 
 }
 
-/* FIX: il gap fisso di 5.4rem faceva andare a capo il menu tra 992px e ~1200px */
+
 .nav-links {
   gap: clamp(0.5rem, 3vw, 5.4rem);
 }
@@ -436,7 +429,7 @@ textarea:focus {
   }
 }
 
-/* Mobile: header fisso a 56px, menu a tendina sopra il contenuto */
+
 @media (max-width: 767.98px) {
   .site-header {
     height: var(--header-h);
@@ -496,10 +489,6 @@ textarea:focus {
 
 /*------------------ 04. SECTION HERO ------------------*/
 
-/* FIX (causa principale dello scroll orizzontale su iPhone SE):
-   .hero è un grid con un solo figlio (.container). Senza una colonna
-   esplicita la colonna è "auto" e si allarga al contenuto, trascinandosi
-   dietro tutta la pagina. Con minmax(0, 1fr) resta larga come lo schermo. */
 .hero {
   min-height: calc(100vh - 76px);
   min-height: calc(100svh - 76px);
@@ -644,8 +633,7 @@ textarea:focus {
     min-height: auto;
     padding: 3rem 0;
   }
-
-  /* FIX: l'ombra a blocco e la nota spostata a destra uscivano dallo schermo */
+   
   .browser-card {
     box-shadow: 8px 8px 0 rgba(47, 118, 109, 0.22), var(--shadow);
   }
@@ -658,7 +646,7 @@ textarea:focus {
 /* Mobile */
 @media (max-width: 767.98px) {
   .hero {
-    padding: 1.5rem 0 2rem; /* FIX: i 6rem di padding verticale erano enormi su telefono */
+    padding: 1.5rem 0 2rem; 
   }
 
   .hero-grid {
@@ -691,7 +679,7 @@ textarea:focus {
   }
 
   .browser-card {
-    box-shadow: 4px 4px 0 rgba(47, 118, 109, 0.22), var(--shadow); /* FIX: ombra più corta, non sborda */
+    box-shadow: 4px 4px 0 rgba(47, 118, 109, 0.22), var(--shadow); 
   }
 
   .browser-dots {
@@ -862,7 +850,6 @@ textarea:focus {
 
 /* ---------- Griglia ---------- */
 
-/* FIX: la griglia non aveva colonne definite (colonna "auto" che si allarga) */
 .pf-grid {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
@@ -887,14 +874,11 @@ textarea:focus {
   box-shadow: 8px 8px 0 var(--pf-ink);
 }
 
-/* Il primo progetto occupa tutta la riga: anteprima a sinistra, testo a destra */
 .pf-card--featured {
   grid-column: 1 / -1;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); /* FIX: era 1fr 1.1fr */
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); 
 }
-
-/* ---------- Anteprima (finto browser in CSS) ---------- */
 
 .pf-shot {
   --pf-shot-bg: var(--pf-terracotta);
@@ -909,7 +893,6 @@ textarea:focus {
   background: var(--pf-shot-bg);
 }
 
-/* FIX: nell'HTML l'anteprima è dopo il testo, qui la porto a sinistra come da progetto */
 .pf-card--featured .pf-shot {
   order: -1;
   margin: 1.4rem 0 1.4rem 1.4rem;
@@ -987,8 +970,7 @@ textarea:focus {
   background: var(--pf-cream);
 }
 
-/* FIX: questa regola generica (height: 100%) veniva sovrascritta male dalla
-   regola ".pf-shot .pf-img" sopra; ora è limitata agli img fuori da .pf-shot */
+
 .pf-img {
   display: block;
   max-width: 100%;
@@ -1138,7 +1120,7 @@ textarea:focus {
 /* Tablet */
 @media (max-width: 900px) {
   .pf-card--featured {
-    grid-template-columns: minmax(0, 1fr); /* FIX: era 1fr */
+    grid-template-columns: minmax(0, 1fr); 
   }
 
   .pf-card--featured .pf-shot {
@@ -1559,8 +1541,7 @@ textarea:focus {
   }
 }
 
-/* FIX: questo blocco mobile era presente DUE volte identico (una prima delle
-   regole base, dove veniva sovrascritto, e una qui). Ora ce n'è una sola. */
+
 @media (max-width: 767.98px) {
 
   .extra-services {
@@ -1768,7 +1749,7 @@ textarea:focus {
 
 .about-wrapper {
   display: grid;
-  grid-template-columns: minmax(0, 1.25fr) minmax(0, 0.75fr); /* FIX: era minmax(280px, ...) */
+  grid-template-columns: minmax(0, 1.25fr) minmax(0, 0.75fr); 
   gap: 2rem;
   align-items: stretch;
   min-width: 0;
@@ -1847,7 +1828,6 @@ textarea:focus {
   box-shadow: 3px 3px 0 rgba(47, 118, 109, 0.25);
 }
 
-/* FIX: tolto !important, non serve */
 .img-chi_sono {
   width: 100%;
   max-width: 100%;
@@ -1947,8 +1927,6 @@ details p {
   margin: 0.8rem 0 0;
 }
 
-/* FIX: tolti height: 100% e overflow-y: auto, senza un'altezza definita
-   sul genitore non facevano nulla e potevano creare scroll annidati. */
 @media (max-width: 767.98px) {
   .faq-grid {
     grid-template-columns: minmax(0, 1fr);
@@ -2110,7 +2088,7 @@ details p {
 
   .site-footer li {
     font-size: 0.9rem;
-    overflow-wrap: anywhere; /* FIX: l'email lunga non deve allargare la pagina */
+    overflow-wrap: anywhere; 
   }
 
   .site-footer li + li {
@@ -2134,8 +2112,6 @@ details p {
 
 
 /*------------------ 13. STILI LEGACY (non presenti in index.html) ------------------*/
-/* Rimasti per compatibilità con eventuali altre pagine: contatti, testimonianze,
-   progetti vecchio stile, card "about". Puoi eliminarli se non li usi. */
 
 .portfolio-grid,
 .testimonial-grid {
@@ -2361,7 +2337,6 @@ cite {
   margin-top: 45px;
 }
 
-/* FIX: unificati i due blocchi mobile (768px e 767.98px) in uno solo */
 @media (max-width: 767.98px) {
   .privacy-hero {
     padding-block: 2rem;
