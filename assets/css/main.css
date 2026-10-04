@@ -52,16 +52,19 @@
   box-sizing: border-box;
 }
 
+html, body {
+  max-width: 100%;
+  overflow-x: hidden; 
+
 html {
   scroll-behavior: smooth;
   -webkit-text-size-adjust: 100%;
-  max-width: 100%;
-  overflow-x: hidden;
 }
 
 body {
   margin: 0;
-  max-width: 100%;
+  position: relative; 
+  width: 100%;        
   background:
     radial-gradient(circle at top left, rgba(217, 154, 61, 0.14), transparent 34rem),
     linear-gradient(180deg, #fff8ef 0%, #fffdf9 48%, #fff8ef 100%);
@@ -69,6 +72,7 @@ body {
   font-family: "Inter", "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
   line-height: 1.6;
 }
+
 
 img,
 svg,
